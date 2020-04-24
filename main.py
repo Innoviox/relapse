@@ -85,11 +85,18 @@ class Board(tk.Tk):
         info = label.master.grid_info()
         r, c = info['row'], info['column']
         
-        for (dx, dy) in MOVEMENT[label['text'].upper()]:
+        for label in self.valid_moves(label['text'], (r, c)):
             try:
-                self.highlight(self.label_at(r + dy, c + dx))
+                self.highlight(label)
             except (tk.TclError, IndexError): # went off grid
                 pass
+
+    def valid_moves(self, typ, pos):
+        r, c = pos
+        for (dx, dy) in MOVEMENT[typ.upper()]:
+            new_row, new_col = r + dy, c + dx
+
+            lbl = self.label_at
 
     def highlight(self, label):
         self.highlighted.append(label)
