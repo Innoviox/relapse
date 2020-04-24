@@ -37,7 +37,7 @@ class Color(Enum):
 class Piece:
     def __init__(self, master, typ):
         self.master = master
-        self.typ = typ
+        self.typ = PieceType._value2member_map_[typ.upper()]
         self.color = Color.YELLOW if typ == typ.upper() else Color.RED
 
 class Board(tk.Tk):
@@ -52,7 +52,7 @@ class Board(tk.Tk):
         for r_idx, row in enumerate(BOARD.split()):
             for c_idx, sq in enumerate(row):
                 frame = tk.Frame(self.board_frame, width=10, height=10, borderwidth=1, relief=tk.GROOVE)
-                label = tk.Label(frame)
+                label = tk.Label(frame, text=' ', font='TkFixedFont')
                 
                 if sq.upper() in SQUARES:
                     p = Piece(self, sq)
