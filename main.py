@@ -67,13 +67,16 @@ class Board(tk.Tk):
                 label.pack()
 
         self.highlighted = []
+        self.selected = None
 
         self.board_frame.pack()
 
     def clicked(self, event):
         label = event.widget
 
-        if label['text'] in SQUARES:
+        if self.selected:
+            ...
+        elif label['text'] in SQUARES:
             self.clear_highlighted()
             self.highlight_possible(label)
 
