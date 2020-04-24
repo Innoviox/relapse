@@ -66,17 +66,20 @@ class Board(tk.Tk):
                 label = tk.Label(frame, text=' ', font='TkFixedFont')
                 
                 if sq.upper() in SQUARES:
-                    p = Piece(self, sq)
-                    self.pieces.append(p)
-                    label.config(text=p.typ.value)
+                    label.config(text=sq)
 
                 label.config(bg=COLORS[sq])
+
+                label.bind("<1>", self.clicked) # bind to left-click
 
                 frame.grid(row=r_idx, column=c_idx)
                 label.pack()
 
 
         self.board_frame.pack()
+
+    def clicked(self, event):
+        print(event)
 
 if __name__ == "__main__":
     Board().mainloop()
