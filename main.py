@@ -27,6 +27,17 @@ BOARD = '\n'.join([
     '..............', 
 ])
 SQUARES = 'SCT'
+ENTRY, HOME = 'EH'
+COLORS = {
+    '.': 'white',
+    ENTRY.lower(): 'red',
+    ENTRY.upper(): 'yellow',
+    HOME.lower(): 'dark green',
+    HOME.upper(): 'light green'
+}
+for i in SQUARES:
+    COLORS[i.upper()] = 'yellow'
+    COLORS[i.lower()] = 'red'
 
 class PieceType(Enum):
     SQUARE, CIRCLE, TRIANGLE = SQUARES
@@ -57,7 +68,9 @@ class Board(tk.Tk):
                 if sq.upper() in SQUARES:
                     p = Piece(self, sq)
                     self.pieces.append(p)
-                    label.config(text=p.typ.value, bg=p.color.value)
+                    label.config(text=p.typ.value)
+
+                label.config(bg=COLORS[sq])
 
                 frame.grid(row=r_idx, column=c_idx)
                 label.pack()
@@ -67,3 +80,5 @@ class Board(tk.Tk):
 
 if __name__ == "__main__":
     Board().mainloop()
+
+# todo: lines/diagonals/circles on board
