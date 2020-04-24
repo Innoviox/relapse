@@ -29,7 +29,7 @@ BOARD = '\n'.join([
 SQUARES = 'SCT'
 ENTRY, HOME = 'EH'
 COLORS = {
-    '.': 'white',
+    '.': 'white', ' ': 'white',
     ENTRY.lower(): 'red',
     ENTRY.upper(): 'yellow',
     HOME.lower(): 'dark green',
@@ -39,17 +39,11 @@ for i in SQUARES:
     COLORS[i.upper()] = 'yellow'
     COLORS[i.lower()] = 'red'
 
-class PieceType(Enum):
-    SQUARE, CIRCLE, TRIANGLE = SQUARES
-
-class Color(Enum):
-    YELLOW, RED = 'yellow', 'red'
-
-class Piece:
-    def __init__(self, master, typ):
-        self.master = master
-        self.typ = PieceType._value2member_map_[typ.upper()]
-        self.color = Color.YELLOW if typ == typ.upper() else Color.RED
+MOVEMENT = {
+    SQUARES[0]:  ((1, 0), (-1, 0), (0, 1), (0, -1)),
+    SQUARES[-1]: ((1, 1), (1, -1), (-1, 1), (-1, -1))
+}
+MOVEMENT[SQUARES[1]] = MOVEMENT[SQUARES[0]] + MOVEMENT[SQUARES[-1]]
 
 class Board(tk.Tk):
     def __init__(self):
@@ -57,9 +51,6 @@ class Board(tk.Tk):
 
         self.board_frame = tk.Frame(self, borderwidth=5, relief=tk.RIDGE)
         
-        self.pieces = []
-
-        # initialize pieces
         for r_idx, row in enumerate(BOARD.split()):
             for c_idx, sq in enumerate(row):
                 frame = tk.Frame(self.board_frame, width=10, height=10, borderwidth=1, relief=tk.GROOVE)
@@ -75,11 +66,36 @@ class Board(tk.Tk):
                 frame.grid(row=r_idx, column=c_idx)
                 label.pack()
 
+        self.highlighted = []
 
         self.board_frame.pack()
 
     def clicked(self, event):
-        print(event)
+        label = event.widget
+
+        if label['text'] in SQUARES:
+            self.clear_highlighted()
+            self.highlight_possible(label)
+
+    def highlight_possible(self, label):
+        info = label.master.grid_info()
+        r, c = info['row'], info['column']
+        
+        for (dx, dy) in MOVEMENT[label['text']]:
+            try:
+                self.highlight(self.board_frame.grid_slaves(r + dy, c + dx)[0].winfo_children()[0])
+            except tk.TclError: # went off grid
+                pass
+
+    def highlight(self, label):
+        self.highlighted.append(label)
+        label.config(bg='light blue')
+
+    def clear_highlighted(self):
+        for sq in self.highlighted:
+            sq.config(bg=COLORS[sq['text']])
+        self.highlighted = []
+            
 
 if __name__ == "__main__":
     Board().mainloop()
