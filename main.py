@@ -14,7 +14,8 @@ A number means the square has a circle on the corresponding corner:
  .---.
  4   3
 '''
-BOARD = '\n'.join([
+# ugly setting up of constants
+BOARD = [
     '..............',
     '..............',
     'S............s',
@@ -25,7 +26,7 @@ BOARD = '\n'.join([
     'S............s',
     '..............',
     '..............', 
-])
+]
 SQUARES = 'SCT'
 ENTRY, HOME = 'EH'
 COLORS = {
@@ -51,7 +52,7 @@ class Board(tk.Tk):
 
         self.board_frame = tk.Frame(self, borderwidth=5, relief=tk.RIDGE)
         
-        for r_idx, row in enumerate(BOARD.split()):
+        for r_idx, row in enumerate(BOARD):
             for c_idx, sq in enumerate(row):
                 frame = tk.Frame(self.board_frame, width=10, height=10, borderwidth=1, relief=tk.GROOVE)
                 label = tk.Label(frame, text=' ', font='TkFixedFont')
@@ -76,18 +77,18 @@ class Board(tk.Tk):
 
         if self.selected:
             ...
-        elif label['text'] in SQUARES:
+        elif label['text'].upper() in SQUARES:
             self.clear_highlighted()
             self.highlight_possible(label)
 
-    def highlight_possible(self, label):
+    def highlight_possible(self, label): # note: assumes clear_highlighted has already been called
         info = label.master.grid_info()
         r, c = info['row'], info['column']
         
-        for (dx, dy) in MOVEMENT[label['text']]:
+        for (dx, dy) in MOVEMENT[label['text'].upper()]:
             try:
-                self.highlight(self.board_frame.grid_slaves(r + dy, c + dx)[0].winfo_children()[0])
-            except tk.TclError: # went off grid
+                self.highlight(self.label_at(r + dy, c + dx))
+            except (tk.TclError, IndexError): # went off grid
                 pass
 
     def highlight(self, label):
@@ -98,6 +99,9 @@ class Board(tk.Tk):
         for sq in self.highlighted:
             sq.config(bg=COLORS[sq['text']])
         self.highlighted = []
+
+    def label_at(self, row, col):
+        return self.board_frame.grid_slaves(row, col)[0].winfo_children()[0]
             
 
 if __name__ == "__main__":
