@@ -32,7 +32,7 @@ class PieceType(Enum):
     SQUARE, CIRCLE, TRIANGLE = SQUARES
 
 class Color(Enum):
-    YELLOW, RED = range(2)
+    YELLOW, RED = 'yellow', 'red'
 
 class Piece:
     def __init__(self, master, typ):
@@ -40,12 +40,30 @@ class Piece:
         self.typ = typ
         self.color = Color.YELLOW if typ == typ.upper() else Color.RED
 
-class Board:
+class Board(tk.Tk):
     def __init__(self):
+        tk.Tk.__init__(self) # call superclass initializer
+
+        self.board_frame = tk.Frame(self, borderwidth=5, relief=tk.RIDGE)
+        
         self.pieces = []
 
         # initialize pieces
-        for row in BOARD:
-            for sq in row:
+        for r_idx, row in enumerate(BOARD.split()):
+            for c_idx, sq in enumerate(row):
+                frame = tk.Frame(self.board_frame, width=10, height=10, borderwidth=1, relief=tk.GROOVE)
+                label = tk.Label(frame)
+                
                 if sq.upper() in SQUARES:
-                    self.pieces.append(Piece(self, sq))
+                    p = Piece(self, sq)
+                    self.pieces.append(p)
+                    label.config(text=p.typ.value, bg=p.color.value)
+
+                frame.grid(row=r_idx, column=c_idx)
+                label.pack()
+
+
+        self.board_frame.pack()
+
+if __name__ == "__main__":
+    Board().mainloop()
