@@ -93,8 +93,6 @@ class Board(tk.Tk):
         if self.selected and label in self.highlighted:
             self.clear_highlighted()
             self.move_to(label)
-            self.selected = None
-            self.tick_turn()
         elif t.upper() in SQUARES and t == self.turn(t):
             self.clear_highlighted()
             self.highlight_possible(label)
@@ -102,9 +100,38 @@ class Board(tk.Tk):
 
     def move_to(self, label): # note: assumes selected has been set
         self.moved.append(self.get_pos(self.selected))
-        label.config(text=self.selected['text'], bg=self.selected['bg'], fg='black')
-        self.selected['text'] = ' '
-        self.reset(self.selected)
+
+        def finish_move():
+            label.config(text=self.selected['text'], bg=self.selected['bg'], fg='black')     
+            self.selected['text'] = ' '
+            self.reset(self.selected)
+            self.selected = None
+            self.tick_turn()
+        
+        if label['text'] == ' ': 
+            finish_move()
+        else: # bounce tile
+            self.bounce(label['text'], finish_move)
+
+    # a bit of a nasty way to handle bouncing
+    def bounce(self, typ, callback):
+        available = [i for i in map(self._get_label, self.board_frame.grid_slaves()) if i['text'] == typ and i['fg'] in PLACEHOLDERS.values()]
+        for i in available:
+            i.config(bg='green')
+            i.unbind("<1>")
+            i.bind("<1>", self.bounce_to(typ, callback))
+
+    def bounce_to(self, typ, callback):
+        def clicked(event):
+            label = event.widget
+            label.config(text=typ, fg='black')
+
+            # rebind callbacks
+            label.unbind("<1>")
+            label.bind("<1>", self.clicked)
+            
+            callback()
+        return clicked
 
     def tick_turn(self):
         self.turn = next(self.turns)
@@ -154,6 +181,9 @@ class Board(tk.Tk):
             return self.board_frame.grid_slaves(row, col)[0].winfo_children()[0]
         except (tk.TclError, IndexError): # went off grid
             return None
+
+    def _get_label(self, frame):
+        return frame.winfo_children()[0]
 
     def get_pos(self, label):
         info = label.master.grid_info()
