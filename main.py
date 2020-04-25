@@ -55,6 +55,9 @@ PLACEHOLDERS = {
 def same_case(s1, s2): # utility method to test if two one-length strings are the same case
     return (s1 == s1.upper() and s2 == s2.upper()) or (s1 == s1.lower() and s2 == s2.lower())
 
+def is_diagonal(dxy): # returns if a motion is diagonal or not
+    return all(dxy)
+
 class Board(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self) # call superclass initializer
@@ -157,6 +160,12 @@ class Board(tk.Tk):
 
             if label := self.label_at(new_row, new_col):
                 t = label['text']
+                if is_diagonal((dx, dy)):
+                    try:
+                        if 'E' == BOARD[r][c].upper() or 'E' == BOARD[new_row][new_col].upper() or 'E' == BOARD[r][c + 1].upper() or 'E' == BOARD[r][c - 1].upper():
+                            continue
+                    except IndexError:
+                        pass
                 if t == ' ' or label['fg'] in PLACEHOLDERS.values() or not same_case(typ, t):
                     yield label
 
