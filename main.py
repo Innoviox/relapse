@@ -29,6 +29,7 @@ BOARD = [
     '..............',
     '..............', 
 ]
+CIRCLES = [[3, 3], [5, 3], [3, 9], [5, 9]]
 SQUARES = 'SCT'
 ENTRY, HOME = 'EH'
 COLORS = {
@@ -160,13 +161,19 @@ class Board(tk.Tk):
 
             if label := self.label_at(new_row, new_col):
                 t = label['text']
+                impossible = False
                 if is_diagonal((dx, dy)):
-                    try:
-                        if 'E' == BOARD[r][c].upper() or 'E' == BOARD[new_row][new_col].upper() or 'E' == BOARD[r][c + 1].upper() or 'E' == BOARD[r][c - 1].upper():
-                            continue
-                    except IndexError:
-                        pass
-                if t == ' ' or label['fg'] in PLACEHOLDERS.values() or not same_case(typ, t):
+                    for circ in CIRCLES:
+                        a, b = circ[0] - r, circ[1] - c
+                        if [a, b, dx, dy] in [ # some fun bashing. please dont ask me to justify these numbers
+                            [0, -1, -1, 1],
+                            [-1, -1, -1, -1],
+                            [0, 0, 1, 1],
+                            [-1, 0, 1, -1]
+                            ]:
+                            impossible = True
+                        
+                if not impossible and t == ' ' or label['fg'] in PLACEHOLDERS.values() or not same_case(typ, t):
                     yield label
 
     def highlight(self, label):
