@@ -76,8 +76,8 @@ class Board(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self) # call superclass initializer
 
-        self.board_canvas = tk.Canvas(self, background="#ffffff")
-        self.board_frame = tk.Frame(self.board_canvas, borderwidth=5, relief=tk.RIDGE)
+        self.board_frame = tk.Frame(self, borderwidth=5, relief=tk.RIDGE)
+        # self.board_canvas = tk.Canvas(self)
         
         for r_idx, row in enumerate(BOARD):
             for c_idx, sq in enumerate(row):
@@ -103,14 +103,13 @@ class Board(tk.Tk):
         self.moved = []
 
         self.board_frame.pack()
-        self.board_canvas.pack()
-        
-        self.black_circle = ImageTk.PhotoImage(Image.open('./black_circle.gif'))
 
-        for c in CIRCLES:
-            i = self.board_canvas.create_image((c[1] * 10, c[0] * 10), image=self.black_circle)
-            # i = self.board_canvas.create_circle(c[1] * 10, c[0] * 10, 10, fill="black")
-            self.board_canvas.tag_raise(i)
+
+        # self.board_canvas.place(relx=1, x=-2, y=2, anchor=tk.NE)
+        # self.black_circle = ImageTk.PhotoImage(Image.open('./black_circle.gif'))
+
+        # for c in CIRCLES:
+        #     i = self.board_canvas.create_circle(c[1] * 20 + 25, c[0] * 20 + 20, 5, fill="black")
 
     def clicked(self, event):
         label = event.widget
