@@ -105,10 +105,11 @@ class Board(tk.Tk):
         self.board_frame.pack()
         self.board_canvas.pack()
         
-        black_circle = ImageTk.PhotoImage(Image.open('./black_circle.gif'))
+        self.black_circle = ImageTk.PhotoImage(Image.open('./black_circle.gif'))
 
         for c in CIRCLES:
-            i = self.board_canvas.create_circle(c[1] * 10, c[0] * 10, 10, fill="black")
+            i = self.board_canvas.create_image((c[1] * 10, c[0] * 10), image=self.black_circle)
+            # i = self.board_canvas.create_circle(c[1] * 10, c[0] * 10, 10, fill="black")
             self.board_canvas.tag_raise(i)
 
     def clicked(self, event):
