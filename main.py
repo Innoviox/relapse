@@ -214,7 +214,7 @@ class Board(tk.Tk):
                         impossible = True
                 # print(' '.join(map(str, ((dx, dy), old_text, orig, impossible))))
             
-                if not impossible and t == ' ' or label['fg'] in PLACEHOLDERS.values() or not same_case(typ, t):
+                if not impossible and (t == ' ' or label['fg'] in PLACEHOLDERS.values() or not same_case(typ, t)):
                     yield label
         # print()
 
