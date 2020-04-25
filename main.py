@@ -201,15 +201,15 @@ class Board(tk.Tk):
                     impossible = True
                 if orig.upper() == 'E' and not same_case(typ, orig): # can't move into alternate entrance
                     impossible = True
-                if old_text.upper() == 'H' and orig.upper() != 'H' # can't move out of home 
+                if old_text.upper() == 'H' and orig.upper() != 'H': # can't move out of home 
                     impossible = True
                 if old_text.upper() == 'H' and orig.upper() == 'H' and not same_case(old_text, orig): # can't move into other home
                     impossible = True
                 if orig.upper() == 'H' and old_text.upper() == '.': # can't move into home from outside
                     impossible = True
-                if orig.upper() == 'E' and dy != 0: # can't move into entrance from outside
+                if orig.upper() == 'E' and dy != 0 and dx == 0: # can't move into entrance from outside
                     impossible = True
-                print(' '.join(map(str, ((dx, dy), old_text, orig, impossible))))
+                # print(' '.join(map(str, ((dx, dy), old_text, orig, impossible))))
             
                 if not impossible and t == ' ' or label['fg'] in PLACEHOLDERS.values() or not same_case(typ, t):
                     yield label
