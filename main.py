@@ -124,7 +124,7 @@ class Board(tk.Tk):
     def bounce_to(self, typ, callback):
         def clicked(event):
             label = event.widget
-            label.config(text=typ, fg='black')
+            label.config(text=typ, bg=COLORS[typ], fg='black')
 
             # rebind callbacks
             label.unbind("<1>")
