@@ -1,6 +1,7 @@
 import tkinter as tk
 from enum import Enum
 from itertools import cycle
+from PIL import Image, ImageTk
 
 '''
 lowercase is yellow, uppercase is red
@@ -89,6 +90,17 @@ class Board(tk.Tk):
         self.moved = []
 
         self.board_frame.pack()
+        im = Image.open('/Users/chervjay/Documents/GitHub/relapse/black_circle.gif')
+        ph = ImageTk.PhotoImage(im)
+
+        circle_test = tk.Label(self.board_frame, image=ph, bg='systemTransparent')
+        # circle_test.grid(row=3, column=3, rowspan=2, columnspan=2)
+
+        # self.wm_attributes('-alpha', 0.5)
+
+        # for c in CIRCLES:
+        #     tk.Label(self, text='', bg='black', fg='black').place(x=c[1]*10 + c[1], y=c[0]*10)
+            
 
     def clicked(self, event):
         label = event.widget
