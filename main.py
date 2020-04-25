@@ -54,6 +54,18 @@ PLACEHOLDERS = {
     COLORS[SQUARES[0].lower()]: 'white'
 }
 
+def _create_circle(self, x, y, r, **kwargs):
+    return self.create_oval(x-r, y-r, x+r, y+r, **kwargs)
+tk.Canvas.create_circle = _create_circle
+
+def _create_circle_arc(self, x, y, r, **kwargs):
+    if "start" in kwargs and "end" in kwargs:
+        kwargs["extent"] = kwargs["end"] - kwargs["start"]
+        del kwargs["end"]
+    return self.create_arc(x-r, y-r, x+r, y+r, **kwargs)
+tk.Canvas.create_circle_arc = _create_circle_arc
+
+
 def same_case(s1, s2): # utility method to test if two one-length strings are the same case
     return (s1 == s1.upper() and s2 == s2.upper()) or (s1 == s1.lower() and s2 == s2.lower())
 
@@ -64,7 +76,8 @@ class Board(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self) # call superclass initializer
 
-        self.board_frame = tk.Frame(self, borderwidth=5, relief=tk.RIDGE)
+        self.board_canvas = tk.Canvas(self, background="#ffffff")
+        self.board_frame = tk.Frame(self.board_canvas, borderwidth=5, relief=tk.RIDGE)
         
         for r_idx, row in enumerate(BOARD):
             for c_idx, sq in enumerate(row):
@@ -90,17 +103,13 @@ class Board(tk.Tk):
         self.moved = []
 
         self.board_frame.pack()
-        im = Image.open('/Users/chervjay/Documents/GitHub/relapse/black_circle.gif')
-        ph = ImageTk.PhotoImage(im)
+        self.board_canvas.pack()
+        
+        black_circle = ImageTk.PhotoImage(Image.open('./black_circle.gif'))
 
-        circle_test = tk.Label(self.board_frame, image=ph, bg='systemTransparent')
-        # circle_test.grid(row=3, column=3, rowspan=2, columnspan=2)
-
-        # self.wm_attributes('-alpha', 0.5)
-
-        # for c in CIRCLES:
-        #     tk.Label(self, text='', bg='black', fg='black').place(x=c[1]*10 + c[1], y=c[0]*10)
-            
+        for c in CIRCLES:
+            i = self.board_canvas.create_circle(c[1] * 10, c[0] * 10, 10, fill="black")
+            self.board_canvas.tag_raise(i)
 
     def clicked(self, event):
         label = event.widget
