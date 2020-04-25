@@ -76,9 +76,35 @@ class Board(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self) # call superclass initializer
 
-        self.board_canvas = tk.Canvas(self, background="#ffffff")
-        self.board_frame = tk.Frame(self.board_canvas, borderwidth=5, relief=tk.RIDGE)
+        self.board_canvas = tk.Canvas(self)
         
+        self.board_frame = tk.Frame(self.board_canvas, borderwidth=5, relief=tk.RIDGE)
+        self.create_board()
+        
+        self.highlighted = []
+        self.selected = None
+
+        self.turns = cycle((str.upper, str.lower)) # yellow first, red second
+        self.turn = next(self.turns)
+
+        self.moved = []
+
+        self.board_frame.pack()
+        self.board_canvas.pack(side="left", fill="both", expand=True)
+
+        self.canvas_window = self.board_canvas.create_window((9, 9), window=self.board_frame)
+        
+        self.black_circle = ImageTk.PhotoImage(Image.open('./black_circle.gif'))
+
+        for c in CIRCLES:
+            # i = self.board_canvas.create_image((c[1] * 10, c[0] * 10), image=self.black_circle)
+            i = self.board_canvas.create_circle(c[1] * 10, c[0] * 10, 10, fill="black")
+            self.board_canvas.tag_raise(i)
+
+        self.board_frame.bind("<Configure>", self.onFrameConfigure)                       #bind an event whenever the size of the viewPort frame changes.
+        self.board_canvas.bind("<Configure>", self.onCanvasConfigure)  
+
+    def create_board(self):
         for r_idx, row in enumerate(BOARD):
             for c_idx, sq in enumerate(row):
                 frame = tk.Frame(self.board_frame, width=10, height=10, borderwidth=1, relief=tk.GROOVE)
@@ -93,24 +119,6 @@ class Board(tk.Tk):
 
                 frame.grid(row=r_idx, column=c_idx)
                 label.pack()
-
-        self.highlighted = []
-        self.selected = None
-
-        self.turns = cycle((str.upper, str.lower)) # yellow first, red second
-        self.turn = next(self.turns)
-
-        self.moved = []
-
-        self.board_frame.pack()
-        self.board_canvas.pack()
-        
-        self.black_circle = ImageTk.PhotoImage(Image.open('./black_circle.gif'))
-
-        for c in CIRCLES:
-            i = self.board_canvas.create_image((c[1] * 10, c[0] * 10), image=self.black_circle)
-            # i = self.board_canvas.create_circle(c[1] * 10, c[0] * 10, 10, fill="black")
-            self.board_canvas.tag_raise(i)
 
     def clicked(self, event):
         label = event.widget
@@ -230,6 +238,16 @@ class Board(tk.Tk):
     def get_pos(self, label):
         info = label.master.grid_info()
         return info['row'], info['column']
+
+    def onFrameConfigure(self, event):                                              
+        '''Reset the scroll region to encompass the inner frame'''
+        self.board_canvas.configure(scrollregion=self.board_canvas.bbox("all"))                 #whenever the size of the frame changes, alter the scroll region respectively.
+
+    def onCanvasConfigure(self, event):
+        '''Reset the canvas window to encompass inner frame when required'''
+        canvas_width = event.width
+        # self.board_canvas.itemconfig(self.canvas_window, width = canvas_width, height = event.height)            #whenever the size of the canvas changes alter the window region respectively.
+
             
 
 if __name__ == "__main__":
