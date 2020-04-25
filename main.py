@@ -91,8 +91,8 @@ class Board(tk.Tk):
         t = label['text']
 
         if self.selected and label in self.highlighted:
-            self.move_to(label)
             self.clear_highlighted()
+            self.move_to(label)
             self.selected = None
             self.tick_turn()
         elif t.upper() in SQUARES and t == self.turn(t):
