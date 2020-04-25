@@ -119,16 +119,18 @@ class Board(tk.Tk):
         for i in available:
             i.config(bg='green')
             i.unbind("<1>")
-            i.bind("<1>", self.bounce_to(typ, callback))
+            i.bind("<1>", self.bounce_to(typ, callback, available))
 
-    def bounce_to(self, typ, callback):
+    def bounce_to(self, typ, callback, available):
         def clicked(event):
             label = event.widget
-            label.config(text=typ, bg=COLORS[typ], fg='black')
+            label.config(text=typ, fg='black')
 
             # rebind callbacks
-            label.unbind("<1>")
-            label.bind("<1>", self.clicked)
+            for i in available:
+                i.config(bg=COLORS[typ])
+                i.unbind("<1>")
+                i.bind("<1>", self.clicked)
             
             callback()
         return clicked
