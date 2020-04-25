@@ -77,6 +77,8 @@ class Board(tk.Tk):
         self.highlighted = []
         self.selected = None
 
+        self.moved = []
+
         self.board_frame.pack()
 
     def clicked(self, event):
@@ -93,6 +95,7 @@ class Board(tk.Tk):
             self.selected = label
 
     def move_to(self, label): # note: assumes selected has been set
+        self.moved.append(self.get_pos(self.selected))
         label.config(text=self.selected['text'], bg=self.selected['bg'])
         self.selected['text'] = ' '
         self.reset(self.selected)
@@ -105,7 +108,13 @@ class Board(tk.Tk):
 
     def valid_moves(self, typ, pos):
         r, c = pos
-        for (dx, dy) in MOVEMENT[typ.upper()]:
+
+        moves = MOVEMENT[typ.upper()]
+        if pos not in self.moved and (c in [0, len(BOARD[0]) - 1]):
+            moves = list(moves) + [[i[0] * 2, i[1] * 2] for i in moves] # double movement on first turn
+            # todo: can't move through pieces on a double move
+            
+        for (dx, dy) in moves:
             new_row, new_col = r + dy, c + dx
 
             if label := self.label_at(new_row, new_col):
