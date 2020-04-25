@@ -46,6 +46,9 @@ MOVEMENT = {
 }
 MOVEMENT[SQUARES[1]] = MOVEMENT[SQUARES[0]] + MOVEMENT[SQUARES[-1]]
 
+def same_case(s1, s2): # utility method to test if two one-length strings are the same case
+    return (s1 == s1.upper() and s2 == s2.upper()) or (s1 == s1.lower() and s2 == s2.lower())
+
 class Board(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self) # call superclass initializer
@@ -86,17 +89,19 @@ class Board(tk.Tk):
         r, c = info['row'], info['column']
         
         for label in self.valid_moves(label['text'], (r, c)):
-            try:
-                self.highlight(label)
-            except (tk.TclError, IndexError): # went off grid
-                pass
+            self.highlight(label)
+            
 
     def valid_moves(self, typ, pos):
         r, c = pos
         for (dx, dy) in MOVEMENT[typ.upper()]:
             new_row, new_col = r + dy, c + dx
 
-            lbl = self.label_at
+            if label := self.label_at(new_row, new_col):
+                t = label['text']
+
+                if t == ' ' or not same_case(typ, t):
+                    yield label
 
     def highlight(self, label):
         self.highlighted.append(label)
@@ -108,7 +113,10 @@ class Board(tk.Tk):
         self.highlighted = []
 
     def label_at(self, row, col):
-        return self.board_frame.grid_slaves(row, col)[0].winfo_children()[0]
+        try:
+            return self.board_frame.grid_slaves(row, col)[0].winfo_children()[0]
+        except (tk.TclError, IndexError): # went off grid
+            return None
             
 
 if __name__ == "__main__":
