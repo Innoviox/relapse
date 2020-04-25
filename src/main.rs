@@ -2,9 +2,8 @@ use crate::board::Board;
 
 mod board;
 mod util;
+mod visualizer;
 
 fn main() {
-    let board = Board::default();
-
-    println!("{}", board);
+    visualizer::main();
 }
