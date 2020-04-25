@@ -163,6 +163,9 @@ class Board(tk.Tk):
     def tick_turn(self):
         self.turn = next(self.turns)
 
+        if w := self.winner():
+            print(["", "Yellow", "Red"][w], "wins!")
+
     def highlight_possible(self, label): # note: assumes clear_highlighted has already been called
         r, c = self.get_pos(label)
         
@@ -207,7 +210,7 @@ class Board(tk.Tk):
                     impossible = True
                 if orig.upper() == 'H' and old_text.upper() == '.': # can't move into home from outside
                     impossible = True
-                if orig.upper() == 'E' and dy != 0: # can't move into entrance from outside
+                if old_text.upper() != 'E' and orig.upper() == 'E' and dy != 0: # can't move into entrance from outside
                     if (orig == orig.upper() and dx == 1) or \
                        (orig == orig.lower() and dx == -1) or \
                        dx == 0:
@@ -218,6 +221,21 @@ class Board(tk.Tk):
                     yield label
         # print()
 
+    def winner(self): # returns 1 for yellow, 2 for red, None for none
+        yellow, red = 0, 0
+        for r_idx, row in enumerate(BOARD):
+            for c_idx, sq in enumerate(row):
+                if sq.upper() == 'H' and self.label_at(r_idx, c_idx)['text'] != ' ':
+                    if sq == sq.upper():
+                        yellow += 1
+                    else:
+                        red += 1
+        if yellow == 4:
+            return 1
+        if red == 4:
+            return 2
+
+    # visual utility methods
     def highlight(self, label):
         self.highlighted.append(label)
         label.config(bg='light blue')
@@ -240,7 +258,7 @@ class Board(tk.Tk):
 
     def label_at(self, row, col):
         try:
-            return self.board_frame.grid_slaves(row, col)[0].winfo_children()[0]
+            return self._get_label(self.board_frame.grid_slaves(row, col)[0])
         except (tk.TclError, IndexError): # went off grid
             return None
 
@@ -256,3 +274,4 @@ if __name__ == "__main__":
     Board().mainloop()
 
 # todo: lines/diagonals/circles on board
+# todo: can click on placeholder
