@@ -110,8 +110,7 @@ class Board(tk.Tk):
 
             if label := self.label_at(new_row, new_col):
                 t = label['text']
-                print(label['fg'])
-                if t == ' ' or label['fg'] in PLACEHOLDERS or not same_case(typ, t):
+                if t == ' ' or label['fg'] in PLACEHOLDERS.values() or not same_case(typ, t):
                     yield label
 
     def highlight(self, label):
