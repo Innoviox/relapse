@@ -118,7 +118,7 @@ class Board(tk.Tk):
         if self.selected and label in self.highlighted:
             self.clear_highlighted()
             self.move_to(label)
-        elif t.upper() in SQUARES and t == self.turn(t):
+        elif t.upper() in SQUARES and t == self.turn(t) and label['fg'] not in PLACEHOLDERS.values():
             self.clear_highlighted()
             self.highlight_possible(label)
             self.selected = label
@@ -274,4 +274,4 @@ if __name__ == "__main__":
     Board().mainloop()
 
 # todo: lines/diagonals/circles on board
-# todo: can click on placeholder
+# done! todo: can click on placeholder
