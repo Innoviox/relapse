@@ -45,6 +45,10 @@ MOVEMENT = {
     SQUARES[-1]: ((1, 1), (1, -1), (-1, 1), (-1, -1))
 }
 MOVEMENT[SQUARES[1]] = MOVEMENT[SQUARES[0]] + MOVEMENT[SQUARES[-1]]
+PLACEHOLDERS = {
+    COLORS[SQUARES[0]]: 'pink',
+    COLORS[SQUARES[0].lower()]: 'white'
+}
 
 def same_case(s1, s2): # utility method to test if two one-length strings are the same case
     return (s1 == s1.upper() and s2 == s2.upper()) or (s1 == s1.lower() and s2 == s2.lower())
@@ -106,8 +110,8 @@ class Board(tk.Tk):
 
             if label := self.label_at(new_row, new_col):
                 t = label['text']
-
-                if t == ' ' or not same_case(typ, t):
+                print(label['fg'])
+                if t == ' ' or label['fg'] in PLACEHOLDERS or not same_case(typ, t):
                     yield label
 
     def highlight(self, label):
@@ -121,7 +125,12 @@ class Board(tk.Tk):
 
     def reset(self, label): # reset to original color
         r, c = self.get_pos(label)
-        label.config(bg=COLORS[BOARD[r][c]])
+        original_text = BOARD[r][c]
+        
+        label.config(bg=COLORS[original_text])
+
+        if original_text.upper() in SQUARES:
+           label.config(text=original_text, fg=PLACEHOLDERS[label['bg']])
 
     def label_at(self, row, col):
         try:
