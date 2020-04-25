@@ -1,6 +1,10 @@
+use crate::board::Board;
+
 mod board;
 mod util;
 
 fn main() {
-    println!("Hello, world!");
+    let board = Board::default();
+
+    println!("{}", board);
 }
