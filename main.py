@@ -21,7 +21,7 @@ BOARD = [
     '..............',
     '..............',
     'S............s',
-    'S............t',
+    'T............t',
     'C...ehhHHE...c',
     'C...ehhHHE...c',
     'T............t',
@@ -102,9 +102,7 @@ class Board(tk.Tk):
 
     def move_to(self, label): # note: assumes selected has been set
         self.moved.append(self.get_pos(self.selected))
-        print(self.selected['bg'])
         label.config(text=self.selected['text'], bg=self.selected['bg'], fg='black')
-        print(label['bg'])
         self.selected['text'] = ' '
         self.reset(self.selected)
 
