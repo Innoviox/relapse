@@ -207,13 +207,16 @@ class Board(tk.Tk):
                     impossible = True
                 if orig.upper() == 'H' and old_text.upper() == '.': # can't move into home from outside
                     impossible = True
-                if orig.upper() == 'E' and dy != 0 and dx == 0: # can't move into entrance from outside
-                    impossible = True
+                if orig.upper() == 'E' and dy != 0: # can't move into entrance from outside
+                    if (orig == orig.upper() and dx == 1) or \
+                       (orig == orig.lower() and dx == -1) or \
+                       dx == 0:
+                        impossible = True
                 # print(' '.join(map(str, ((dx, dy), old_text, orig, impossible))))
             
                 if not impossible and t == ' ' or label['fg'] in PLACEHOLDERS.values() or not same_case(typ, t):
                     yield label
-        print()
+        # print()
 
     def highlight(self, label):
         self.highlighted.append(label)
