@@ -172,6 +172,8 @@ class Board(tk.Tk):
     def valid_moves(self, typ, pos):
         r, c = pos
 
+        old_text = BOARD[r][c]
+
         moves = MOVEMENT[typ.upper()]
         if pos not in self.moved and (c in [0, len(BOARD[0]) - 1]):
             moves = list(moves) + [[i[0] * 2, i[1] * 2] for i in moves] # double movement on first turn
@@ -181,7 +183,9 @@ class Board(tk.Tk):
             new_row, new_col = r + dy, c + dx
 
             if label := self.label_at(new_row, new_col):
+                orig = BOARD[new_row][new_col]
                 t = label['text']
+                
                 impossible = False
                 if is_diagonal((dx, dy)):
                     for circ in CIRCLES:
@@ -193,9 +197,23 @@ class Board(tk.Tk):
                             [-1, 0, 1, -1]
                             ]:
                             impossible = True
-                        
+                if old_text.upper() == 'E' and orig == '.': # can't move out of entrance
+                    impossible = True
+                if orig.upper() == 'E' and not same_case(typ, orig): # can't move into alternate entrance
+                    impossible = True
+                if old_text.upper() == 'H' and orig.upper() != 'H' # can't move out of home 
+                    impossible = True
+                if old_text.upper() == 'H' and orig.upper() == 'H' and not same_case(old_text, orig): # can't move into other home
+                    impossible = True
+                if orig.upper() == 'H' and old_text.upper() == '.': # can't move into home from outside
+                    impossible = True
+                if orig.upper() == 'E' and dy != 0: # can't move into entrance from outside
+                    impossible = True
+                print(' '.join(map(str, ((dx, dy), old_text, orig, impossible))))
+            
                 if not impossible and t == ' ' or label['fg'] in PLACEHOLDERS.values() or not same_case(typ, t):
                     yield label
+        print()
 
     def highlight(self, label):
         self.highlighted.append(label)
