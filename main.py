@@ -175,6 +175,8 @@ class Board(tk.Tk):
 
         if original_text.upper() in SQUARES:
            label.config(text=original_text, fg=PLACEHOLDERS[label['bg']])
+        elif label['text'].upper() in SQUARES:
+            label.config(bg=COLORS[label['text']], fg='black')
 
     def label_at(self, row, col):
         try:
