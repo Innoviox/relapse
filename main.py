@@ -1,5 +1,7 @@
 import tkinter as tk
 from enum import Enum
+from itertools import cycle
+
 '''
 lowercase is yellow, uppercase is red
 Ss: square, Tt: triangle, Cc: circle
@@ -77,28 +79,37 @@ class Board(tk.Tk):
         self.highlighted = []
         self.selected = None
 
+        self.turns = cycle((str.upper, str.lower)) # yellow first, red second
+        self.turn = next(self.turns)
+
         self.moved = []
 
         self.board_frame.pack()
 
     def clicked(self, event):
         label = event.widget
+        t = label['text']
 
         if self.selected and label in self.highlighted:
             self.move_to(label)
             self.clear_highlighted()
             self.selected = None
-            # todo: tick turn?
-        elif label['text'].upper() in SQUARES:
+            self.tick_turn()
+        elif t.upper() in SQUARES and t == self.turn(t):
             self.clear_highlighted()
             self.highlight_possible(label)
             self.selected = label
 
     def move_to(self, label): # note: assumes selected has been set
         self.moved.append(self.get_pos(self.selected))
-        label.config(text=self.selected['text'], bg=self.selected['bg'])
+        print(self.selected['bg'])
+        label.config(text=self.selected['text'], bg=self.selected['bg'], fg='black')
+        print(label['bg'])
         self.selected['text'] = ' '
         self.reset(self.selected)
+
+    def tick_turn(self):
+        self.turn = next(self.turns)
 
     def highlight_possible(self, label): # note: assumes clear_highlighted has already been called
         r, c = self.get_pos(label)
